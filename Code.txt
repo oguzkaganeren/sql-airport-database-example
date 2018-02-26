@@ -1,0 +1,363 @@
+CREATE TABLE ApModel (
+	mdlID SERIAL PRIMARY KEY,
+	name CHARACTER VARYING(35) NOT NULL UNIQUE,
+	capacity int NOT NULL,
+	weight REAL NOT NULL
+);
+CREATE TABLE Airplane (
+	regNum SERIAL PRIMARY KEY,
+	name CHARACTER VARYING(35) UNIQUE,
+	mdlID int REFERENCES ApModel (mdlID)
+);
+CREATE TABLE Technician(
+	techSSN CHARACTER VARYING(11) PRIMARY KEY,
+	name CHARACTER VARYING(25) NOT NULL,
+	surname CHARACTER VARYING(25) NOT NULL,
+	salary REAL NOT NULL
+);
+CREATE TABLE Technician_Expert(
+	techExpID SERIAL PRIMARY KEY,
+	mdlID INT REFERENCES ApModel (mdlID),
+	techSSN CHARACTER VARYING(11) REFERENCES Technician (techSSN)
+);
+CREATE TABLE Address(
+	adrID SERIAL PRIMARY KEY,
+	adrName CHARACTER VARYING(35) NOT NULL,
+	address CHARACTER VARYING(200) NOT NULL,
+	city CHARACTER VARYING(35) NOT NULL,
+	zip CHARACTER VARYING(10) NOT NULL,
+	country CHARACTER VARYING(25) NOT NULL,
+	district CHARACTER VARYING(25) NOT NULL
+);
+CREATE TABLE Phone(
+	phoneID SERIAL PRIMARY KEY,
+	areaCode INT NOT NULL,
+	number VARCHAR(7) NOT NULL
+);
+CREATE TABLE Tech_Adr(
+	TAID SERIAL PRIMARY KEY,
+	techSSN CHARACTER VARYING(11) REFERENCES Technician (techSSN),
+	adrID INT REFERENCES Address (adrID)
+);
+CREATE TABLE Tech_Phone(
+	TPID SERIAL PRIMARY KEY,
+	techSSN CHARACTER VARYING(11) REFERENCES Technician (techSSN),
+	phoneID INT REFERENCES Phone (phoneID)
+);
+CREATE TABLE TrafficController(
+	trafSSN CHARACTER VARYING(11) PRIMARY KEY,
+	name CHARACTER VARYING(25) NOT NULL,
+	surname CHARACTER VARYING(25) NOT NULL,
+	salary REAL NOT NULL
+);
+CREATE TABLE MedicalEx(
+	medID SERIAL PRIMARY KEY,
+	name CHARACTER VARYING(35) NOT NULL UNIQUE,
+	periodDAY INT NOT NULL
+);
+CREATE TABLE TrafController_MedEx(
+	traMedExID SERIAL PRIMARY KEY,
+	trafSSN CHARACTER VARYING(11) REFERENCES TrafficController (trafSSN),
+	medID INT REFERENCES MedicalEx (medID),
+	date DATE NOT NULL
+);
+CREATE TABLE TrafController_Adr(
+	trafContAdrID SERIAL PRIMARY KEY,
+	traSSN CHARACTER VARYING(11) REFERENCES TrafficController (trafSSN),
+	adrID INT REFERENCES Address (adrID)
+);
+CREATE TABLE TrafController_Phone(
+	trafContPhoneID SERIAL PRIMARY KEY,
+	traSSN CHARACTER VARYING(11) REFERENCES TrafficController (trafSSN),
+	phoneID INT REFERENCES Phone (phoneID)
+);
+
+CREATE TABLE Syndicate (
+	SyndicateID SERIAL PRIMARY KEY,
+	name CHARACTER VARYING(55) UNIQUE NOT NULL
+);
+
+Create TABLE Tech_Syndicate(
+	techSynID SERIAL PRIMARY KEY,
+	techID CHARACTER VARYING(11) REFERENCES Technician (techSSN),
+	synID INT REFERENCES Syndicate (SyndicateID),
+	memDate DATE NOT NULL
+);
+CREATE TABLE TrafController_Syndicate(
+	trafSynID SERIAL PRIMARY KEY,
+	synID INT REFERENCES Syndicate (SyndicateID),
+	traSSN CHARACTER VARYING(11) REFERENCES TrafficController (trafSSN),
+	memDate DATE NOT NULL
+);
+CREATE TABLE Test(
+	testID SERIAL PRIMARY KEY,
+	name CHARACTER VARYING(55) NOT NULL,
+	maxScore INT NOT NULL
+);
+CREATE TABLE PartPlane(
+	partPlaneID SERIAL PRIMARY KEY,
+	name CHARACTER VARYING(55) NOT NULL UNIQUE
+);
+CREATE TABLE Airplane_Test(
+	ATID SERIAL PRIMARY KEY,
+	regNum INT REFERENCES Airplane (regNum),
+	testID INT REFERENCES Test (testID),
+	date DATE NOT NULL,
+	score INT NOT NULL,
+	techSSN CHARACTER VARYING(11) REFERENCES Technician (techSSN),
+	hours INT NOT NULL,
+	partPlaneID INT REFERENCES PartPlane (partPlaneID),
+	passTest BOOLEAN NOT NULL,
+	validationPeriodWeek INT NOT NULL
+);
+CREATE TABLE Maintenance(
+	mainID SERIAL PRIMARY KEY,
+	name CHARACTER VARYING(55) NOT NULL UNIQUE,
+	partPlaneID INT REFERENCES PartPlane (partPlaneID),
+	reason CHARACTER VARYING(150) NOT NULL,
+	periodWeek INT NOT NULL
+);
+CREATE TABLE Maintenance_Airplane(
+	MainAirID SERIAL PRIMARY KEY,
+	regNum INT REFERENCES Airplane (regNum),
+	mainID INT REFERENCES Maintenance (MainID),
+	date DATE NOT NULL
+);
+INSERT INTO Technician (techSSN,name,surname,salary) VALUES ('38705256874','Ziya','Akgül','1200');
+INSERT INTO Technician (techSSN,name,surname,salary) VALUES ('42536521564','Ahmet','Kiraz','1300');
+INSERT INTO Technician (techSSN,name,surname,salary) VALUES ('74585455128','Mehmet','Kargý','1050');
+INSERT INTO Technician (techSSN,name,surname,salary) VALUES ('65848625482','Yusuf','Kiraz','1350');
+INSERT INTO Technician (techSSN,name,surname,salary) VALUES ('69658452258','Oðuz','Güler','1500');
+INSERT INTO Technician (techSSN,name,surname,salary) VALUES ('25158523650','Mahmut','Akgül','1200');
+INSERT INTO Technician (techSSN,name,surname,salary) VALUES ('63558548520','Hasan','Aksoy','1400');
+INSERT INTO Technician (techSSN,name,surname,salary) VALUES ('78555265824','Kamil','Ak','1100');
+INSERT INTO Technician (techSSN,name,surname,salary) VALUES ('75552545582','Osman','Solmaz','2200');
+INSERT INTO Technician (techSSN,name,surname,salary) VALUES ('65525455258','Ayça','Sengul','1200');
+INSERT INTO Address (adrname,address,district,city,zip,country) VALUES ('ev','gül sokak, no:64','buca','izmir','35625','Türkiye');
+INSERT INTO Address (adrname,address,district,city,zip,country) VALUES ('otel','ata sokak, no:42','gaziemir','izmir','35605','Türkiye');
+INSERT INTO Address (adrname,address,district,city,zip,country) VALUES ('ev','kasým sokak, no:53','buca','izmir','35625','Türkiye');
+INSERT INTO Address (adrname,address,district,city,zip,country) VALUES ('otel','ata sokak, no:42','gaziemir','izmir','35605','Türkiye');
+INSERT INTO Address (adrname,address,district,city,zip,country) VALUES ('ev','lale sokak, no:216','merkez','denizli','20647','Türkiye');
+INSERT INTO Address (adrname,address,district,city,zip,country) VALUES ('ev','gül sokak, no:64','buca','izmir','35625','Türkiye');
+INSERT INTO Address (adrname,address,district,city,zip,country) VALUES ('yazlýk','sýrevler, no:70/8','foça','izmir','35685','Türkiye');
+INSERT INTO Address (adrname,address,district,city,zip,country) VALUES ('ev','lüle sokak, no:2','þirinyer','izmir','35615','Türkiye');
+INSERT INTO Address (adrname,address,district,city,zip,country) VALUES ('ev','altý sokak, no:35','efes','izmir','35644','Türkiye');
+INSERT INTO Address (adrname,address,district,city,zip,country) VALUES ('ev','mimar sinan cad, no:21','koþu','izmir','35695','Türkiye');
+INSERT INTO Address (adrname,address,district,city,zip,country) VALUES ('ev','kolanya sokak, no:9','buca','izmir','35625','Türkiye');
+INSERT INTO Address (adrname,address,district,city,zip,country) VALUES ('yazlýk','kale sokak, no:72','foça','izmir','35685','Türkiye');
+INSERT INTO Address (adrname,address,district,city,zip,country) VALUES ('ev','siyah sokak, no:24','þirinyer','izmir','35615','Türkiye');
+INSERT INTO Address (adrname,address,district,city,zip,country) VALUES ('ev','duman sokak, no:357','efes','izmir','35644','Türkiye');
+INSERT INTO Address (adrname,address,district,city,zip,country) VALUES ('ev','fatma cad, no:27','koþu','izmir','35695','Türkiye');
+INSERT INTO tech_adr (adrid,techssn) VALUES (1,'38705256874');
+INSERT INTO tech_adr (adrid,techssn) VALUES (2,'42536521564');
+INSERT INTO tech_adr (adrid,techssn) VALUES (3,'74585455128');
+INSERT INTO tech_adr (adrid,techssn) VALUES (4,'65848625482');
+INSERT INTO tech_adr (adrid,techssn) VALUES (5,'69658452258');
+INSERT INTO tech_adr (adrid,techssn) VALUES (6,'25158523650');
+INSERT INTO tech_adr (adrid,techssn) VALUES (7,'63558548520');
+INSERT INTO tech_adr (adrid,techssn) VALUES (8,'78555265824');
+INSERT INTO tech_adr (adrid,techssn) VALUES (9,'75552545582');
+INSERT INTO tech_adr (adrid,techssn) VALUES (10,'65525455258');
+INSERT INTO phone (areacode,number) VALUES (258,5716422);
+INSERT INTO phone (areacode,number) VALUES (451,6587887);
+INSERT INTO phone (areacode,number) VALUES (538,7845784);
+INSERT INTO phone (areacode,number) VALUES (506,4578456);
+INSERT INTO phone (areacode,number) VALUES (538,8577125);
+INSERT INTO phone (areacode,number) VALUES (505,3577854);
+INSERT INTO phone (areacode,number) VALUES (507,4578054);
+INSERT INTO phone (areacode,number) VALUES (537,5784578);
+INSERT INTO phone (areacode,number) VALUES (536,4578454);
+INSERT INTO phone (areacode,number) VALUES (506,1578572);
+INSERT INTO phone (areacode,number) VALUES (260,4875785);
+INSERT INTO phone (areacode,number) VALUES (206,7885457);
+INSERT INTO phone (areacode,number) VALUES (538,2353878);
+INSERT INTO phone (areacode,number) VALUES (537,6853585);
+INSERT INTO phone (areacode,number) VALUES (536,5383852);
+INSERT INTO phone (areacode,number) VALUES (539,5688525);
+INSERT INTO phone (areacode,number) VALUES (538,5858652);
+INSERT INTO phone (areacode,number) VALUES (537,5855856);
+INSERT INTO phone (areacode,number) VALUES (538,6852538);
+INSERT INTO phone (areacode,number) VALUES (538,5685568);
+INSERT INTO tech_phone (phoneid,techssn) VALUES (1,'38705256874');
+INSERT INTO tech_phone (phoneid,techssn) VALUES (2,'42536521564');
+INSERT INTO tech_phone (phoneid,techssn) VALUES (3,'74585455128');
+INSERT INTO tech_phone (phoneid,techssn) VALUES (4,'65848625482');
+INSERT INTO tech_phone (phoneid,techssn) VALUES (5,'69658452258');
+INSERT INTO tech_phone (phoneid,techssn) VALUES (6,'25158523650');
+INSERT INTO tech_phone (phoneid,techssn) VALUES (7,'63558548520');
+INSERT INTO tech_phone (phoneid,techssn) VALUES (8,'78555265824');
+INSERT INTO tech_phone (phoneid,techssn) VALUES (9,'75552545582');
+INSERT INTO tech_phone (phoneid,techssn) VALUES (10,'65525455258');
+INSERT INTO trafficcontroller (trafSSN,name,surname,salary) VALUES ('68575548687','ali','polat','2500');
+INSERT INTO trafficcontroller (trafSSN,name,surname,salary) VALUES ('85648575854','derya','korkmaz','2100');
+INSERT INTO trafficcontroller (trafSSN,name,surname,salary) VALUES ('65854582264','mehmet','korkmaz','2800');
+INSERT INTO trafficcontroller (trafSSN,name,surname,salary) VALUES ('25533685426','zeynep','guler','2230');
+INSERT INTO trafficcontroller (trafSSN,name,surname,salary) VALUES ('45855625872','caner','tas','2430');
+INSERT INTO trafficcontroller (trafSSN,name,surname,salary) VALUES ('85568457588','hamdi','selvi','2532');
+INSERT INTO trafficcontroller (trafSSN,name,surname,salary) VALUES ('45585256684','berk','acar','2120');
+INSERT INTO trafficcontroller (trafSSN,name,surname,salary) VALUES ('25356685484','gamze','sönmez','2530');
+INSERT INTO trafficcontroller (trafSSN,name,surname,salary) VALUES ('86695452586','hakan','solak','2590');
+INSERT INTO trafficcontroller (trafSSN,name,surname,salary) VALUES ('68559985472','hamza','guclu','2580');
+INSERT INTO trafcontroller_adr (adrid,trassn) VALUES (1,'68575548687');
+INSERT INTO trafcontroller_adr (adrid,trassn) VALUES (11,'85648575854');
+INSERT INTO trafcontroller_adr (adrid,trassn) VALUES (12,'65854582264');
+INSERT INTO trafcontroller_adr (adrid,trassn) VALUES (13,'25533685426');
+INSERT INTO trafcontroller_adr (adrid,trassn) VALUES (14,'45855625872');
+INSERT INTO trafcontroller_adr (adrid,trassn) VALUES (15,'85568457588');
+INSERT INTO trafcontroller_adr (adrid,trassn) VALUES (5,'45585256684');
+INSERT INTO trafcontroller_adr (adrid,trassn) VALUES (9,'25356685484');
+INSERT INTO trafcontroller_adr (adrid,trassn) VALUES (11,'86695452586');
+INSERT INTO trafcontroller_adr (adrid,trassn) VALUES (14,'68559985472');
+INSERT INTO trafcontroller_phone (phoneid,trassn) VALUES (11,'68575548687');
+INSERT INTO trafcontroller_phone (phoneid,trassn) VALUES (12,'85648575854');
+INSERT INTO trafcontroller_phone (phoneid,trassn) VALUES (13,'65854582264');
+INSERT INTO trafcontroller_phone (phoneid,trassn) VALUES (14,'25533685426');
+INSERT INTO trafcontroller_phone (phoneid,trassn) VALUES (15,'45855625872');
+INSERT INTO trafcontroller_phone (phoneid,trassn) VALUES (16,'85568457588');
+INSERT INTO trafcontroller_phone (phoneid,trassn) VALUES (17,'45585256684');
+INSERT INTO trafcontroller_phone (phoneid,trassn) VALUES (18,'25356685484');
+INSERT INTO trafcontroller_phone (phoneid,trassn) VALUES (19,'86695452586');
+INSERT INTO trafcontroller_phone (phoneid,trassn) VALUES (20,'68559985472');
+INSERT INTO medicalex (name,periodday) VALUES ('blood',60);
+INSERT INTO medicalex (name,periodday) VALUES ('eye',60);
+INSERT INTO medicalex (name,periodday) VALUES ('reflex',15);
+INSERT INTO medicalex (name,periodday) VALUES ('urine',60);
+INSERT INTO medicalex (name,periodday) VALUES ('allergy',60);
+INSERT INTO medicalex (name,periodday) VALUES ('diabetes',15);
+INSERT INTO medicalex (name,periodday) VALUES ('hearing',60);
+INSERT INTO medicalex (name,periodday) VALUES ('contagion',60);
+INSERT INTO medicalex (name,periodday) VALUES ('body',15);
+INSERT INTO medicalex (name,periodday) VALUES ('muscle',60);
+INSERT INTO trafcontroller_medex (trafssn,medid,date) VALUES ('68575548687',1,'2017-05-22');
+INSERT INTO trafcontroller_medex (trafssn,medid,date) VALUES ('85648575854',2,'2017-04-27');
+INSERT INTO trafcontroller_medex (trafssn,medid,date) VALUES ('65854582264',2,'2017-04-22');
+INSERT INTO trafcontroller_medex (trafssn,medid,date) VALUES ('25533685426',1,'2017-04-18');
+INSERT INTO trafcontroller_medex (trafssn,medid,date) VALUES ('45855625872',2,'2017-03-28');
+INSERT INTO trafcontroller_medex (trafssn,medid,date) VALUES ('85568457588',3,'2017-04-25');
+INSERT INTO trafcontroller_medex (trafssn,medid,date) VALUES ('45585256684',5,'2017-04-21');
+INSERT INTO trafcontroller_medex (trafssn,medid,date) VALUES ('25356685484',8,'2017-04-13');
+INSERT INTO trafcontroller_medex (trafssn,medid,date) VALUES ('86695452586',7,'2017-04-15');
+INSERT INTO trafcontroller_medex (trafssn,medid,date) VALUES ('68559985472',9,'2017-02-16');
+INSERT INTO apmodel (name,capacity,weight) VALUES ('A380',174,44000);
+INSERT INTO apmodel (name,capacity,weight) VALUES ('A321',150,35000);
+INSERT INTO apmodel (name,capacity,weight) VALUES ('A330',289,37500);
+INSERT INTO apmodel (name,capacity,weight) VALUES ('A320',150,73500);
+INSERT INTO apmodel (name,capacity,weight) VALUES ('A319',132,70000);
+INSERT INTO apmodel (name,capacity,weight) VALUES ('B737',124,70080);
+INSERT INTO apmodel (name,capacity,weight) VALUES ('B777',349,396000);
+INSERT INTO apmodel (name,capacity,weight) VALUES ('B738',151,79000);
+INSERT INTO apmodel (name,capacity,weight) VALUES ('A340',270,257000);
+INSERT INTO apmodel (name,capacity,weight) VALUES ('A322',190,65000);
+INSERT INTO airplane (name,mdlid) VALUES ('eagle',1);
+INSERT INTO airplane (mdlid) VALUES (2);
+INSERT INTO airplane (name,mdlid) VALUES ('bird',3);
+INSERT INTO airplane (name,mdlid) VALUES ('owl',4);
+INSERT INTO airplane (mdlid) VALUES (5);
+INSERT INTO airplane (name,mdlid) VALUES ('winged beauty',6);
+INSERT INTO airplane (name,mdlid) VALUES ('black',7);
+INSERT INTO airplane (name,mdlid) VALUES ('weird',8);
+INSERT INTO airplane (name,mdlid) VALUES ('hawk',9);
+INSERT INTO airplane (name,mdlid) VALUES ('twity',10);
+INSERT INTO syndicate (name) VALUES ('istikbal');
+INSERT INTO syndicate (name) VALUES ('gökyýldýz');
+INSERT INTO syndicate (name) VALUES ('degiþim');
+INSERT INTO syndicate (name) VALUES ('emektar');
+INSERT INTO syndicate (name) VALUES ('yardým');
+INSERT INTO syndicate (name) VALUES ('çalýþan');
+INSERT INTO syndicate (name) VALUES ('yürüyen');
+INSERT INTO syndicate (name) VALUES ('destek');
+INSERT INTO syndicate (name) VALUES ('uzman');
+INSERT INTO syndicate (name) VALUES ('ihtiyat');
+INSERT INTO tech_syndicate (techid,synid,memdate) VALUES ('38705256874',1,'2017-01-15');
+INSERT INTO tech_syndicate (techid,synid,memdate) VALUES ('42536521564',5,'2017-04-11');
+INSERT INTO tech_syndicate (techid,synid,memdate) VALUES ('74585455128',3,'2017-02-25');
+INSERT INTO tech_syndicate (techid,synid,memdate) VALUES ('65848625482',2,'2017-01-15');
+INSERT INTO tech_syndicate (techid,synid,memdate) VALUES ('65848625482',1,'2017-01-15');
+INSERT INTO tech_syndicate (techid,synid,memdate) VALUES ('65848625482',7,'2017-01-15');
+INSERT INTO tech_syndicate (techid,synid,memdate) VALUES ('25158523650',1,'2017-01-15');
+INSERT INTO tech_syndicate (techid,synid,memdate) VALUES ('25158523650',3,'2017-01-15');
+INSERT INTO tech_syndicate (techid,synid,memdate) VALUES ('75552545582',3,'2017-01-15');
+INSERT INTO tech_syndicate (techid,synid,memdate) VALUES ('65525455258',3,'2017-01-15');
+INSERT INTO trafcontroller_syndicate (trassn,synid,memdate) VALUES ('68575548687',1,'2017-01-15');
+INSERT INTO trafcontroller_syndicate (trassn,synid,memdate) VALUES ('85648575854',5,'2017-04-11');
+INSERT INTO trafcontroller_syndicate (trassn,synid,memdate) VALUES ('65854582264',3,'2017-02-25');
+INSERT INTO trafcontroller_syndicate (trassn,synid,memdate) VALUES ('25533685426',2,'2017-01-15');
+INSERT INTO trafcontroller_syndicate (trassn,synid,memdate) VALUES ('45855625872',1,'2017-01-15');
+INSERT INTO trafcontroller_syndicate (trassn,synid,memdate) VALUES ('85568457588',7,'2017-01-15');
+INSERT INTO trafcontroller_syndicate (trassn,synid,memdate) VALUES ('45585256684',1,'2017-01-15');
+INSERT INTO trafcontroller_syndicate (trassn,synid,memdate) VALUES ('25356685484',3,'2017-01-15');
+INSERT INTO trafcontroller_syndicate (trassn,synid,memdate) VALUES ('25356685484',5,'2017-01-15');
+INSERT INTO trafcontroller_syndicate (trassn,synid,memdate) VALUES ('25356685484',7,'2017-01-15');
+INSERT INTO partplane (name) VALUES ('wing');
+INSERT INTO partplane (name) VALUES ('winglet');
+INSERT INTO partplane (name) VALUES ('spoiler');
+INSERT INTO partplane (name) VALUES ('flaps');
+INSERT INTO partplane (name) VALUES ('elevator');
+INSERT INTO partplane (name) VALUES ('rudder');
+INSERT INTO partplane (name) VALUES ('vertical stabilizer');
+INSERT INTO partplane (name) VALUES ('horizontal stabilizer');
+INSERT INTO partplane (name) VALUES ('turbine engine');
+INSERT INTO partplane (name) VALUES ('cockpit');
+INSERT INTO technician_expert (mdlid,techssn) VALUES (1,'38705256874');
+INSERT INTO technician_expert (mdlid,techssn) VALUES (2,'42536521564');
+INSERT INTO technician_expert (mdlid,techssn) VALUES (3,'74585455128');
+INSERT INTO technician_expert (mdlid,techssn) VALUES (4,'65848625482');
+INSERT INTO technician_expert (mdlid,techssn) VALUES (5,'69658452258');
+INSERT INTO technician_expert (mdlid,techssn) VALUES (6,'25158523650');
+INSERT INTO technician_expert (mdlid,techssn) VALUES (7,'63558548520');
+INSERT INTO technician_expert (mdlid,techssn) VALUES (8,'78555265824');
+INSERT INTO technician_expert (mdlid,techssn) VALUES (9,'75552545582');
+INSERT INTO technician_expert (mdlid,techssn) VALUES (10,'65525455258');
+INSERT INTO test (name,maxscore) VALUES ('Aviation Mechanic Airframe Sample Exam',100);
+INSERT INTO test (name,maxscore) VALUES ('Aviation Mechanic General Sample Exam',100);
+INSERT INTO test (name,maxscore) VALUES ('Aviation Mechanic Powerplant Sample Exam',100);
+INSERT INTO test (name,maxscore) VALUES ('Inspection Authorization Sample Exam',100);
+INSERT INTO test (name,maxscore) VALUES ('Advanced Ground Instructor Sample Exam',100);
+INSERT INTO test (name,maxscore) VALUES ('Flight Instructor Airplane Sample Exam',100);
+INSERT INTO test (name,maxscore) VALUES ('Dispatcher Sample Exam',100);
+INSERT INTO test (name,maxscore) VALUES ('Instrument Rating Airplane Sample Exam',100);
+INSERT INTO test (name,maxscore) VALUES ('Instrument Rating Helicopter Sample Exam',100);
+INSERT INTO test (name,maxscore) VALUES ('Parachute Rigger Sample Exam',100);
+INSERT INTO airplane_test (regnum,testid,date,score,techssn,hours,partplaneid,passtest,validationperiodweek) VALUES (1,1,'2017-05-05',60,'38705256874',6,1,true,12);
+INSERT INTO airplane_test (regnum,testid,date,score,techssn,hours,partplaneid,passtest,validationperiodweek) VALUES (2,2,'2017-03-05',75,'74585455128',9,4,true,8);
+INSERT INTO airplane_test (regnum,testid,date,score,techssn,hours,partplaneid,passtest,validationperiodweek) VALUES (4,8,'2017-05-11',45,'65848625482',6,1,false,8);
+INSERT INTO airplane_test (regnum,testid,date,score,techssn,hours,partplaneid,passtest,validationperiodweek) VALUES (5,3,'2017-05-08',35,'25158523650',6,6,false,12);
+INSERT INTO airplane_test (regnum,testid,date,score,techssn,hours,partplaneid,passtest,validationperiodweek) VALUES (3,4,'2017-01-05',60,'75552545582',6,8,true,9);
+INSERT INTO airplane_test (regnum,testid,date,score,techssn,hours,partplaneid,passtest,validationperiodweek) VALUES (6,9,'2017-04-05',55,'65525455258',8,10,true,8);
+INSERT INTO airplane_test (regnum,testid,date,score,techssn,hours,partplaneid,passtest,validationperiodweek) VALUES (9,1,'2017-04-05',60,'38705256874',6,1,true,12);
+INSERT INTO airplane_test (regnum,testid,date,score,techssn,hours,partplaneid,passtest,validationperiodweek) VALUES (8,4,'2017-05-16',35,'78555265824',2,1,false,9);
+INSERT INTO airplane_test (regnum,testid,date,score,techssn,hours,partplaneid,passtest,validationperiodweek) VALUES (7,10,'2017-02-05',22,'63558548520',10,1,false,7);
+INSERT INTO airplane_test (regnum,testid,date,score,techssn,hours,partplaneid,passtest,validationperiodweek) VALUES (10,7,'2017-04-23',75,'38705256874',6,1,true,12);
+INSERT INTO maintenance (name,partplaneid,reason,periodweek) VALUES ('screw',1,'loosen the screw',12);
+INSERT INTO maintenance (name,partplaneid,reason,periodweek) VALUES ('motor',9,'oil blackending',9);
+INSERT INTO maintenance (name,partplaneid,reason,periodweek) VALUES ('torque motor',4,'ending oil',8);
+INSERT INTO maintenance (name,partplaneid,reason,periodweek) VALUES ('mechanics',7,'rust',5);
+INSERT INTO maintenance (name,partplaneid,reason,periodweek) VALUES ('plaque',8,'expansion',12);
+INSERT INTO maintenance (name,partplaneid,reason,periodweek) VALUES ('electric',2,'cable spanning ',7);
+INSERT INTO maintenance (name,partplaneid,reason,periodweek) VALUES ('heating',3,'circuit switching',12);
+INSERT INTO maintenance (name,partplaneid,reason,periodweek) VALUES ('changing plaque',10,'oxidation',9);
+INSERT INTO maintenance (name,partplaneid,reason,periodweek) VALUES ('changing circuit',5,'burning',7);
+INSERT INTO maintenance (name,partplaneid,reason,periodweek) VALUES ('thermal insulation',6,'obsolescence',11);
+INSERT INTO maintenance_airplane (regnum,mainid,date) VALUES (1,1,'2017-05-15');
+INSERT INTO maintenance_airplane (regnum,mainid,date) VALUES (6,3,'2017-02-18');
+INSERT INTO maintenance_airplane (regnum,mainid,date) VALUES (4,5,'2017-01-12');
+INSERT INTO maintenance_airplane (regnum,mainid,date) VALUES (8,2,'2017-03-5');
+INSERT INTO maintenance_airplane (regnum,mainid,date) VALUES (7,2,'2017-01-1');
+INSERT INTO maintenance_airplane (regnum,mainid,date) VALUES (9,3,'2017-04-3');
+INSERT INTO maintenance_airplane (regnum,mainid,date) VALUES (2,3,'2017-02-5');
+INSERT INTO maintenance_airplane (regnum,mainid,date) VALUES (5,3,'2017-02-17');
+INSERT INTO maintenance_airplane (regnum,mainid,date) VALUES (3,2,'2017-05-24');
+INSERT INTO maintenance_airplane (regnum,mainid,date) VALUES (10,3,'2017-01-22');
+select airplane.name,airplane_test.passtest from airplane inner join airplane_test on airplane.regnum=airplane_test.regnum where airplane_test.passtest=true;
+select airplane.name,airplane_test.passtest from airplane inner join airplane_test on airplane.regnum=airplane_test.regnum where airplane_test.passtest=true AND airplane.name IS NOT NULL;
+select trafficcontroller.name,trafficcontroller.surname,address.district from trafficcontroller inner join trafcontroller_adr on trafficcontroller.trafssn=trafcontroller_adr.trassn inner join address on trafcontroller_adr.adrid=address.adrid UNION select technician.name,technician.surname,address.district from technician inner join tech_adr on technician.techssn=tech_adr.techssn inner join address on tech_adr.adrid=address.adrid order by district;
+select trafficcontroller.name,trafficcontroller.surname,trafcontroller_medex.date,medicalex.periodday  from trafficcontroller inner join trafcontroller_medex on trafficcontroller.trafssn=trafcontroller_medex.trafssn inner join medicalex on trafcontroller_medex.medid=medicalex.medid where trafcontroller_medex.date + periodday*INTERVAL '1 day'<now()::date;
+select syndicate.name,count(syndicateid) from syndicate inner join trafcontroller_syndicate on syndicate.syndicateid=trafcontroller_syndicate.synid inner join tech_syndicate on syndicate.syndicateid=tech_syndicate.synid group by syndicate.name order by syndicate.name asc;
+select apmodel.name,count(mainid) as count from Maintenance_Airplane inner join airplane on Maintenance_Airplane.regnum=airplane.regnum inner join apmodel on apmodel.mdlid=airplane.mdlid group by apmodel.name order by count(mainid) LIMIT 1;
+select syndicate.name,count(syndicateid) from syndicate inner join tech_syndicate on syndicate.syndicateid=tech_syndicate.synid group by syndicate.name order by count(syndicateid) desc LIMIT 1;
+select airplane.name, apmodel.name,maintenance_airplane.date,maintenance_airplane.date + maintenance.periodweek*INTERVAL '1 week'-now()::date from Maintenance_airplane inner join maintenance on maintenance.mainid=maintenance_airplane.mainid inner join airplane on airplane.regnum=maintenance_airplane.regnum inner join apmodel on apmodel.mdlid=airplane.mdlid where maintenance_airplane.date + maintenance.periodweek*INTERVAL '1 week'>now()::date order by maintenance_airplane.date + maintenance.periodweek*INTERVAL '1 week'-now()::date;
+select partplane.name from Maintenance_Airplane inner join maintenance on maintenance.mainid=Maintenance_Airplane.mainid inner join partplane on partplane.partplaneid=maintenance.partplaneid order by partplane.name desc LIMIT 1;
+select maintenance.reason,count(partplane.name)  from Maintenance_Airplane inner join maintenance on maintenance.mainid=Maintenance_Airplane.mainid inner join partplane on partplane.partplaneid=maintenance.partplaneid group by maintenance.reason order by count(partplane.name) desc LIMIT 1;
+
+
+
